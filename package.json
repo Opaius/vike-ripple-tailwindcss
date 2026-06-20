@@ -1,0 +1,28 @@
+{
+  "name": "vike-ripple-tailwindcss",
+  "version": "0.1.0",
+  "description": "Tailwind CSS v4 integration for Ripple TS — @apply in <style> blocks, class scanning",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./setup": "./src/setup.js"
+  },
+  "bin": {
+    "vike-ripple-tailwindcss": "src/setup.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "tailwindcss",
+    "ripple",
+    "ripplets",
+    "vike"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@tailwindcss/vite": ">=4.0.0",
+    "@ripple-ts/vite-plugin": ">=0.3.0"
+  }
+}
