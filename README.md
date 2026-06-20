@@ -1,14 +1,14 @@
-# @vike-ripple/tailwindcss
+# vike-ripple-tailwindcss
+
+> ⚠️ **HIGHLY EXPERIMENTAL** — This package is in early development. APIs may change without notice, parts may not work, and documentation may be incomplete. Use at your own risk.
 
 [Tailwind CSS v4](https://tailwindcss.com) integration for [Ripple TS](https://ripple-ts.com) — enables `@apply` inside Ripple `<style>` blocks with full theme/utility resolution.
 
 ## Install
 
 ```sh
-npm install @vike-ripple/tailwindcss
+npm install vike-ripple-tailwindcss
 ```
-
-Also requires `@tailwindcss/vite` and `@ripple-ts/vite-plugin`.
 
 ## Setup
 
@@ -33,10 +33,11 @@ import { defineConfig } from 'vite'
 import vike from 'vike/plugin'
 import { ripple } from '@ripple-ts/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
-import vikeRipple from '@vike-ripple/vike-ripple'
-import vikeRippleTailwindcss from '@vike-ripple/tailwindcss'
+import vikeRipple from 'vike-ripple'
+import vikeRippleTailwindcss from 'vike-ripple-tailwindcss'
 
 export default defineConfig({
+  optimizeDeps: { exclude: ['ripple'] },
   plugins: [
     vikeRipple(),
     ripple({ excludeRippleExternalModules: true }),
@@ -55,15 +56,13 @@ Create `src/tailwind.css`:
 @import "tailwindcss";
 ```
 
-And import it in your client renderer (`renderer/+onRenderClient.tsx`):
+And import it in the page that uses Tailwind classes:
 
 ```tsx
 import '../src/tailwind.css'
 ```
 
 ## Usage
-
-Inside any `.tsrx` `<style>` block:
 
 ```tsrx
 <style>
@@ -78,10 +77,9 @@ Inside any `.tsrx` `<style>` block:
 
 ## How it works
 
-Ripple extracts CSS from `<style>` blocks and emits it as a virtual module (`file.tsrx?ripple&type=style&lang.css`). This plugin patches `@ripple-ts/vite-plugin` to prepend `@import "tailwindcss"` to the extracted CSS, so Tailwind's compiler has the full theme and utilities available when processing `@apply` directives.
+Ripple extracts CSS from `<style>` blocks and emits it as a virtual module. This plugin patches `@ripple-ts/vite-plugin` to prepend `@import "tailwindcss" layer(reference)` to the extracted CSS, making Tailwind utilities available for `@apply` without generating duplicate CSS output.
 
-The patch avoids the `Cannot apply unknown utility class` error that normally occurs when Tailwind processes CSS without the framework context.
+## Known Issues
 
-## Known issues
-
-- **`</style>` in JavaScript template literals**: Tailwind v4's `@tailwindcss/oxide` scanner scans all non-gitignored files. If a `.tsx` file contains `</style>` inside a JavaScript string (e.g., `const html = '<style>...</style>'`), the scanner may emit a `CssSyntaxError`. Workaround: break the literal with string concatenation: `"<" + "/style>"`. See [tailwindcss#20000](https://github.com/tailwindlabs/tailwindcss/issues/20000).
+- **HMR hang**: Editing files with `@apply` during dev may occasionally cause HMR to hang. Restarting the dev server resolves it.
+- **`</style>` in template literals**: If a file contains `</style>` inside a JavaScript string, the Tailwind Oxide scanner may emit a `CssSyntaxError`. Workaround: break the literal with string concatenation: `"<" + "/style>"`. See [tailwindcss#20000](https://github.com/tailwindlabs/tailwindcss/issues/20000).

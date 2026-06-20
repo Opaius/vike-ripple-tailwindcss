@@ -47,7 +47,7 @@ function patchRippleApply() {
 function resolveModule(rel) {
   const p = join(projectRoot, 'node_modules', rel)
   if (existsSync(p)) return p
-  try { return createRequire(join(projectRoot, 'noop.js')).resolve(rel) } catch { return null }
+  try { const r = createRequire(join(projectRoot, 'package.json')); return r.resolve(rel) } catch { return null }
 }
 
 log('Applying @apply patch...')
